@@ -34,7 +34,9 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   const contacts = await fs.readFile(contactsPath)
-  const foundContactIndex = JSON.parse(contacts).findIndex(
+  const foundContacts = JSON.parse(contacts)
+
+  const foundContactIndex = foundContacts.findIndex(
     (contact) => contact.id === contactId
   )
 
@@ -46,11 +48,9 @@ const removeContact = async (contactId) => {
     }
   }
 
-  const newContactsList = JSON.parse(contacts).filter(
-    (contact) => contact.id !== contactId
-  )
+  foundContacts.splice(foundContactIndex, 1)
 
-  await fs.writeFile(contactsPath, JSON.stringify(newContactsList, null, '\t'))
+  await fs.writeFile(contactsPath, JSON.stringify(foundContacts, null, '\t'))
 
   return {
     status: 'success',
@@ -63,7 +63,11 @@ const addContact = async (body) => {
   const contacts = await fs.readFile(contactsPath)
   const foundContacts = JSON.parse(contacts)
 
-  const newId = String(Math.max(...foundContacts.map(({ id }) => +id)) + 1)
+  const maxId = foundContacts.reduce((acc, contact) => {
+    return Math.max(acc, contact.id)
+  }, 0)
+
+  const newId = String(maxId + 1)
   const newContact = { id: newId, ...body }
 
   const newContactsList = [...foundContacts, newContact]

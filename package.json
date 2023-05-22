@@ -17,9 +17,14 @@
     "dotenv": "^16.0.3",
     "express": "4.17.1",
     "joi": "^17.9.2",
+<<<<<<< HEAD
     "mongoose": "^7.2.0",
     "morgan": "1.10.0",
     "nanoid": "^3.3.4"
+=======
+    "mongoose": "^7.1.0",
+    "morgan": "1.10.0"
+>>>>>>> master
   },
   "devDependencies": {
     "eslint": "7.19.0",

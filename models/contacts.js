@@ -1,20 +1,73 @@
-<<<<<<< HEAD
 const { Schema, model } = require("mongoose");
+const Joi = require("joi");
+
+const { handleMongooseError, patterns } = require("../helpers");
+
+const validationContact = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string()
+    .email({ minDomainSegments: 2 })
+    .messages({
+      "string.pattern.base":
+        "Invalid email. Please provide a valid email address",
+    })
+    .required(),
+  phone: Joi.string().required(),
+  favorite: Joi.boolean(),
+});
+
+const validationFavorite = Joi.object({
+  favorite: Joi.boolean().required(),
+});
 
 const contactSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Set name for contact"],
-      match: /^[A-ZA][a-za]+ [A-ZA][a-za]+$/,
+      validate: [
+        {
+          validator: function (v) {
+            return patterns.namePattern.test(v);
+          },
+          message: (props) =>
+            `${props.value} is invalid name. The name must be written only in letters`,
+        },
+        {
+          validator: (v) => v.length >= 2,
+          message: (props) =>
+            `Invalid name. Must be at least 2 characters. Got ${props.value.length}`,
+        },
+        {
+          validator: (v) => v.length <= 30,
+          message: (props) =>
+            `Invalid name. Must be no more 30 characters. Got ${props.value.length}`,
+        },
+      ],
+      required: [true, "The name is required. Set it for contact"],
     },
     email: {
       type: String,
-      match: /^\w+((\.|-|_)?\w+)*@\w+((\.|-|_)?\w+)*(\.\w{2,3})+$/,
+      unique: true,
+      required: [
+        true,
+        "The email is required. Please provide an email address for the contact",
+      ],
     },
     phone: {
       type: String,
-      match: /^\(\d{3}\)-\d{3}-\d{4}$/,
+      unique: true,
+      validate: [
+        {
+          validator: function (v) {
+            return patterns.phonePattern.test(v);
+          },
+          message: "Invalid phone number. The format should be (XXX) XXX-XXXX",
+        },
+      ],
+      required: [
+        true,
+        "The phone is required. Please provide phone for the contact",
+      ],
     },
     favorite: {
       type: Boolean,
@@ -23,139 +76,12 @@ const contactSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
+
+contactSchema.post("save", handleMongooseError);
 const Contact = model("contact", contactSchema);
 
-module.exports = Contact;
-=======
-const fs = require('fs/promises')
-const path = require('path')
-const contactsPath = path.join(__dirname, 'contacts.json')
-
-const listContacts = async () => {
-  const contacts = await fs.readFile(contactsPath)
-  return {
-    status: 'success',
-    code: 200,
-    data: JSON.parse(contacts),
-  }
-}
-
-const getContactById = async (contactId) => {
-  const contacts = await fs.readFile(contactsPath)
-  const foundContact = JSON.parse(contacts).find(
-    (contact) => contact.id === contactId
-  )
-
-  if (!foundContact) {
-    return {
-      status: 'error',
-      code: 404,
-      message: 'There is no contact with the given ID!',
-    }
-  }
-
-  return {
-    status: 'success',
-    code: 200,
-    data: foundContact,
-  }
-}
-
-const removeContact = async (contactId) => {
-  const contacts = await fs.readFile(contactsPath)
-  const foundContacts = JSON.parse(contacts)
-
-  const foundContactIndex = foundContacts.findIndex(
-    (contact) => contact.id === contactId
-  )
-
-  if (foundContactIndex === -1) {
-    return {
-      status: 'error',
-      code: 404,
-      message: 'Contact not found!',
-    }
-  }
-
-  foundContacts.splice(foundContactIndex, 1)
-
-  await fs.writeFile(contactsPath, JSON.stringify(foundContacts, null, '\t'))
-
-  return {
-    status: 'success',
-    code: 200,
-    message: 'Contact successfully deleted!',
-  }
-}
-
-const addContact = async (body) => {
-  const contacts = await fs.readFile(contactsPath)
-  const foundContacts = JSON.parse(contacts)
-
-  const maxId = foundContacts.reduce((acc, contact) => {
-    return Math.max(acc, contact.id)
-  }, 0)
-
-  const newId = String(maxId + 1)
-  const newContact = { id: newId, ...body }
-
-  const newContactsList = [...foundContacts, newContact]
-
-  await fs.writeFile(contactsPath, JSON.stringify(newContactsList, null, '\t'))
-
-  return {
-    status: 'success',
-    code: 201,
-    data: newContact,
-  }
-}
-
-const updateContact = async (contactId, body) => {
-  try {
-    const contacts = await fs.readFile(contactsPath)
-    const foundContacts = JSON.parse(contacts)
-
-    const foundContactIndex = foundContacts.findIndex(
-      (contact) => contact.id === contactId
-    )
-
-    if (foundContactIndex === -1) {
-      return {
-        status: 'error',
-        code: 404,
-        message: 'Contact not found!',
-      }
-    }
-
-    if (Object.keys(body).length === 0) {
-      return {
-        status: 'error',
-        code: 400,
-        message: 'Missing fields',
-      }
-    }
-
-    const updatedContact = { ...foundContacts[foundContactIndex], ...body }
-    foundContacts[foundContactIndex] = updatedContact
-
-    await fs.writeFile(contactsPath, JSON.stringify(foundContacts, null, '\t'))
-
-    return {
-      status: 'success',
-      code: 200,
-      data: updatedContact,
-    }
-  } catch (error) {
-    console.error(error)
-    throw error
-  }
-}
-
 module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-}
->>>>>>> master
+  Contact,
+  validationContact,
+  validationFavorite,
+};

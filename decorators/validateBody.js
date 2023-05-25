@@ -1,15 +1,15 @@
-const HttpError = require("../helper/HttpError");
+const HttpError = require('../helpers/HttpError')
 
 const validateBody = (contactSchema) => {
   const func = (req, res, next) => {
-    const { error } = contactSchema.validate(req.body);
-    console.log(contactSchema.validate(req.body));
+    const { error } = contactSchema.validate(req.body)
+    console.log(contactSchema.validate(req.body))
     if (error) {
-      throw HttpError(400, error.message);
+      throw HttpError(400, error.message)
     }
-    next();
-  };
-  return func;
-};
+    next()
+  }
+  return func
+}
 
-module.exports = validateBody;
+module.exports = validateBody

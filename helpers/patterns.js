@@ -1,6 +1,6 @@
-const namePattern = /^[A-Za-z ]+$/;
-const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+const namePattern = /^[A-Za-z ]+$/
+const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/
 
-const patterns = { namePattern, phonePattern };
+const patterns = { namePattern, phonePattern }
 
-module.exports = patterns;
+module.exports = patterns

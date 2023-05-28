@@ -1,10 +1,10 @@
-const Joi = require("joi");
+const Joi = require('joi')
 
 const postSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email(),
   phone: Joi.number(),
-});
+})
 
 // const putSchema = Joi.object({
 //   name: Joi.string(),
@@ -12,4 +12,4 @@ const postSchema = Joi.object({
 //   phone: Joi.number(),
 // });
 
-module.exports = { postSchema };
+module.exports = { postSchema }

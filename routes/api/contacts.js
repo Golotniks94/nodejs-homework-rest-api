@@ -1,68 +1,30 @@
-const express = require('express')
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require('../../models/contacts')
-const { postSchema, putSchema } = require('../../joi')
+const express = require("express");
 
-const router = express.Router()
+const router = express.Router();
+const ctrl = require("../../controllers/contacts");
+const { validateBody, isValidId } = require("../../middlewares");
+const { validationContact, validationFavorite } = require("../../models");
 
-router.get('/', (req, res, next) => {
-  listContacts()
-    .then((data) => res.json(data))
-    .catch((err) => console.error(err))
-})
+router.get("", ctrl.getAll);
 
-router.get('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params
-  getContactById(contactId)
-    .then((data) => {
-      res.json(data)
-    })
-    .catch((err) => console.error(err))
-})
+router.get("/:contactId", isValidId, ctrl.getById);
 
-router.post('/', async (req, res, next) => {
-  const body = postSchema.validate(req.body)
-  if (body.error) {
-    res.status(400).json({ message: 'Missing required name field' })
-  } else {
-    addContact(body.value)
-      .then((data) => {
-        res.json(data)
-      })
-      .catch((err) => console.error(err))
-  }
-})
+router.post("", validateBody(validationContact), ctrl.addContact);
 
-router.delete('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params
-  removeContact(contactId)
-    .then((data) => {
-      res.json(data)
-    })
-    .catch((err) => console.error(err))
-})
+router.delete("/:contactId", ctrl.removeContact);
 
-router.put('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params
-  const body = putSchema.validate(req.body)
-  if (body.error) {
-    res.json({
-      status: 'error',
-      code: 403,
-      message: body.error.message,
-    })
-  } else {
-    updateContact(contactId, body.value)
-      .then((data) => {
-        res.json(data)
-      })
-      .catch((err) => console.error(err))
-  }
-})
+router.put(
+  "/:contactId",
+  isValidId,
+  validateBody(validationContact),
+  ctrl.updateContact
+);
 
-module.exports = router
+router.patch(
+  "/:contactId/favorite",
+  isValidId,
+  validateBody(validationFavorite),
+  ctrl.updateStatusContact
+);
+
+module.exports = router;

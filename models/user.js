@@ -1,10 +1,5 @@
 const { Schema, model } = require('mongoose')
-const { handleMongooseError, patterns } = require('../helpers')
-const {
-  validationRegistrationUser,
-  validationLoginUser,
-  validationSubscription,
-} = require('../userValidation')
+const { handleMongooseError } = require('../helpers')
 
 const SUBSCRIPTION_TYPES = ['starter', 'pro', 'business']
 
@@ -48,6 +43,14 @@ const userSchema = new Schema(
     },
     token: { type: String, default: '' },
     avatarURL: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      default: '',
+    },
   },
   { versionKey: false, timestamps: true }
 )
@@ -57,7 +60,4 @@ const User = model('user', userSchema)
 
 module.exports = {
   User,
-  validationRegistrationUser,
-  validationLoginUser,
-  validationSubscription,
 }

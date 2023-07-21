@@ -1,15 +1,19 @@
-const { Contact, validationContact, validationFavorite } = require("./contact");
+const { Contact, validationContact, validationFavorite } = require('./contact')
+const { User } = require('./user')
 const {
-  User,
   validationRegistrationUser,
   validationLoginUser,
   validationSubscription,
-} = require("./user");
+  validationEmailUser,
+} = require('./userValidation')
 
 module.exports = {
   Contact,
   validationContact,
+  validationFavorite,
+  User,
   validationRegistrationUser,
   validationLoginUser,
   validationSubscription,
-};
+  validationEmailUser,
+}

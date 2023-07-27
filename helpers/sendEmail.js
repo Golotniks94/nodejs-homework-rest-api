@@ -18,7 +18,7 @@ const sendEmail = async (email, verificationToken) => {
 
     // Email content
     const emailContent = {
-      from: 'MihalchenkoYuri1987@gmail.com',
+      from: 'golotniks94@gmail.com',
       to: email,
       subject: 'Verify your email, please',
       html: `<h3>You want to sign in?</h3><a style="font-size:16px" target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click this to verify your email</a>`,

@@ -3,9 +3,10 @@ const logger = require('morgan')
 const cors = require('cors')
 require('dotenv').config()
 const contactsRouter = require('./routes/api/contacts')
+
 const app = express()
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.use(logger(formatsLogger))
 app.use(cors())

@@ -1,47 +1,44 @@
-const express = require("express");
+const express = require('express')
+const router = express.Router()
 
-const router = express.Router();
-
-const ctrl = require("../../controllers/auth");
-const { validateBody, authenticate, upload } = require("../../middlewares");
+const ctrl = require('../../controllers/auth')
+const { validateBody, authenticate, upload } = require('../../middlewares')
 
 const {
   validationRegistrationUser,
   validationLoginUser,
   validationSubscription,
   validationEmailUser,
-} = require("../../models");
+} = require('../../models')
 
 router.post(
-  "/register",
+  '/register',
   validateBody(validationRegistrationUser),
   ctrl.register
-);
-router.get("/verify/:verificationToken", ctrl.verifyEmail);
+)
+router.get('/verify/:verificationToken', ctrl.verifyEmail)
 
 router.post(
-  "/verify",
+  '/verify',
   validateBody(validationEmailUser),
   ctrl.resendVerifyEmail
-);
+)
 
-router.post("/login", validateBody(validationLoginUser), ctrl.login);
+router.post('/login', validateBody(validationLoginUser), ctrl.login)
 
-router.get("/current", authenticate, ctrl.getCurrentUser);
-
-router.post("/logout", authenticate, ctrl.logout);
+router.post('/logout', authenticate, ctrl.logout)
 
 router.patch(
-  "/",
+  '/',
   authenticate,
   validateBody(validationSubscription),
   ctrl.updateSubscription
-);
+)
 router.patch(
-  "/avatars",
+  '/avatars',
   authenticate,
-  upload.single("avatar"),
+  upload.single('avatar'),
   ctrl.updateAvatar
-);
+)
 
-module.exports = router;
+module.exports = router

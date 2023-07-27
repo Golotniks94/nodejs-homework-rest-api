@@ -5,7 +5,6 @@ const { BASE_URL } = process.env
 
 const sendEmail = async (email, verificationToken) => {
   try {
-    // Create a nodemailer transporter using SMTP
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
@@ -16,7 +15,6 @@ const sendEmail = async (email, verificationToken) => {
       },
     })
 
-    // Email content
     const emailContent = {
       from: 'golotniks94@gmail.com',
       to: email,
@@ -24,12 +22,10 @@ const sendEmail = async (email, verificationToken) => {
       html: `<h3>You want to sign in?</h3><a style="font-size:16px" target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click this to verify your email</a>`,
     }
 
-    // Send email
     await transporter.sendMail(emailContent)
 
     return true
   } catch (error) {
-    // Handle any errors that occurred during the email sending process
     console.error('Error sending email:', error)
     return false
   }
